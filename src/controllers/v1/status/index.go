@@ -5,5 +5,5 @@ import (
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("V1 status is live!"))
+	w.Write([]byte("V1 status is alive!"))
 }
