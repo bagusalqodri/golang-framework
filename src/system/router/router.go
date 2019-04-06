@@ -4,6 +4,8 @@ import (
 	"learning-golang/pkg/type/routes"
 	v1SubRoutes "learning-golang/src/controllers/v1/router"
 
+	"github.com/go-xorm/xorm"
+
 	"github.com/gorilla/mux"
 )
 
@@ -11,16 +13,10 @@ type Router struct {
 	Router *mux.Router
 }
 
-func NewRouter() (r Router) {
-
-	r.Router = mux.NewRouter().StrictSlash(true)
-
-	return
-}
-
-func (r *Router) Init() {
+func (r *Router) Init(db *xorm.Engine) {
 	r.Router.Use(Middleware)
-	baseRoutes := GetRoutes()
+
+	baseRoutes := GetRoutes(db)
 	for _, route := range baseRoutes {
 		r.Router.
 			Methods(route.Method).
@@ -29,7 +25,7 @@ func (r *Router) Init() {
 			Handler(route.HandlerFunc)
 	}
 
-	v1SubRoutes := v1SubRoutes.GetRoutes()
+	v1SubRoutes := v1SubRoutes.GetRoutes(db)
 	for name, pack := range v1SubRoutes {
 		r.AttachSubRouterWithMiddelware(name, pack.Routes, pack.Middleware)
 	}
@@ -46,6 +42,13 @@ func (r *Router) AttachSubRouterWithMiddelware(path string, subroutes routes.Rou
 			Name(route.Name).
 			Handler(route.HandlerFunc)
 	}
+
+	return
+}
+
+func NewRouter() (r Router) {
+
+	r.Router = mux.NewRouter().StrictSlash(true)
 
 	return
 }

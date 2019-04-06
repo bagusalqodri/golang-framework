@@ -29,15 +29,12 @@ func (s *Server) Init(port string, db *xorm.Engine) {
 }
 
 func (s *Server) Start() {
-	log.Println("Starting Server on port " + s.port)
+	log.Println("Starting server on port" + s.port)
 
 	r := router.NewRouter()
 
-	r.Init()
+	r.Init(s.database)
 
-	/*
-	*	Membuat function untuk logging Request Method & Header ketika server dijalankan
-	 */
 	handler := handlers.LoggingHandler(os.Stdout, handlers.CORS(
 		handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedMethods([]string{"GET", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"}),
